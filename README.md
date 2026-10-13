@@ -1,49 +1,31 @@
-# Python Class and Objects 2
+# Python Bubble Sort and Insertion Sort
 
-Python Class and Objects PDF:
+Python Bubble Sort and Insertion Sort PDF:
 
-https://drive.google.com/file/d/1GHMSwiOsYEQY1oRaJ548FfOX41OujLdd/view?usp=sharing
+https://drive.google.com/file/d/1DpK-S8RL9LZenG2QnSlxk7drOTGo5xVL/view?usp=sharing
 
 **Rules for this assignment**
 
-- Write each class in `assignment.py`. Do not rename anything — names of classes,
-  attributes and methods must match this README **exactly**.
-- Every attribute must be created inside `__init__` using `self.something = ...`
-- Every method needs `self` as its first parameter.
-- When a method says it **returns** something, use `return` — do not `print`.
+- Do **not** use `sorted()` or `.sort()`. The tests check for this — write the
+  algorithms yourself.
+
 
 ## Exercise 1
 
 **Problem:**
 
-- Create a `BusCard` class for a city bus card.
-  - Attributes:
-    - `owner` → the name given when the card is created
-    - `balance` → starts at `0`
-    - `trips` → starts at `0`
-  - Methods:
-    - `top_up(amount)` → adds money to the card and **returns** `True`.
-      If `amount` is `0` or negative, nothing changes and it **returns** `False`.
-    - `pay(fare)` → takes the fare off the balance, adds 1 to `trips`, and
-      **returns** `True`. If the balance is too low, nothing changes and it
-      **returns** `False`. Paying exactly the whole balance is allowed.
+`bubble_sort(data)`
 
-Example:
+Sort `data` from smallest to largest using **bubble sort**, and return it.
+Stop early if a pass makes no swaps.
 
-    Input:
-      card = BusCard("Bat")
-      print(card.top_up(5000))
-      print(card.top_up(-200))
-      print(card.pay(500))
-      print(card.pay(10000))
-      print(card.balance, card.trips)
+**Example:**
 
-    Output:
-      True
-      False
-      True
-      False
-      4500 1
+    Example Input:
+        data = [5, 6, 1, 3]
+
+    Program Output:
+        [1, 3, 5, 6]
 
 ---
 
@@ -51,40 +33,33 @@ Example:
 
 **Problem:**
 
-- Create a `Student` class.
-  - Attributes:
-    - `name`
-    - `grades` → starts as an **empty list**
-  - Methods:
-    - `add_grade(score)` → adds `score` to `grades` and **returns** `True`.
-      Only scores from `0` to `100` are allowed (both included).
-      Any other score is not added, and it **returns** `False`.
-    - `average()` → **returns** the average of the grades, rounded to
-      1 decimal place with `round(value, 1)`. If there are no grades,
-      **return** `0`.
-    - `highest()` → **returns** the highest grade. If there are no grades,
-      **return** `None`.
+`bubble_sort_trace(data)`
 
-**Important:** create the empty list inside `__init__`. Every student must have
-their own list — adding a grade to one student must not change another student.
+Sort `data` using bubble sort, and return a **trace**: a list showing what
+`data` looked like after each pass.
 
-Example:
+- After every pass that made **at least one swap**, add a copy of `data` to the trace.
+- A pass with **no swaps** means the list is sorted — stop, and do **not** add it.
+- If the list is already sorted (or empty), the trace is `[]`.
 
-    Input:
-      s = Student("Saraa")
-      s.add_grade(90)
-      s.add_grade(85)
-      s.add_grade(77)
-      print(s.add_grade(150))
-      print(s.grades)
-      print(s.average())
-      print(s.highest())
+**Example:**
 
-    Output:
-      False
-      [90, 85, 77]
-      84.0
-      90
+    Example Input:
+        data = [5, 6, 1, 3]
+
+    Program Output:
+        [[5, 1, 3, 6], [1, 3, 5, 6]]
+
+    Pass 1 moves 6 to the end      -> [5, 1, 3, 6]
+    Pass 2 moves 5 into place      -> [1, 3, 5, 6]
+    Pass 3 makes no swaps          -> stop, not added
+
+    Example Input:
+        data = [1, 2, 3]
+
+    Program Output:
+        []
+
 
 ---
 
@@ -92,48 +67,78 @@ Example:
 
 **Problem:**
 
-This exercise has **two** classes. A `Playlist` stores `Song` **objects**.
+`insertion_sort(data)`
 
-- Create a `Song` class.
-  - Attributes: `title`, `artist`, `seconds`
-  - Method:
-    - `length()` → **returns** the length as a string `"minutes:seconds"`.
-      The seconds part always has **two digits**: `65` seconds is `"1:05"`,
-      not `"1:5"`.
+Sort `data` from smallest to largest using **insertion sort**, and return it.
 
-- Create a `Playlist` class.
-  - Attributes:
-    - `name`
-    - `songs` → starts as an **empty list**
-  - Methods:
-    - `add_song(song)` → adds a `Song` object to `songs`
-    - `count()` → **returns** how many songs are in the playlist
-    - `total_seconds()` → **returns** the total of all song lengths in seconds
-    - `longest_song()` → **returns** the `Song` **object** with the most seconds.
-      If two songs are equally long, return the one added first.
-      If the playlist is empty, **return** `None`.
-    - `songs_by(artist)` → **returns** a list of the **titles** of all songs by
-      that artist, in the order they were added. Return `[]` if there are none.
+**Example:**
 
-Example:
+    Example Input:
+        data = [5, 6, 1, 3]
 
-    Input:
-      p = Playlist("Road Trip")
-      p.add_song(Song("Morning Steppe", "Nomin", 205))
-      p.add_song(Song("Blue Sky", "Temuulen", 180))
-      p.add_song(Song("Night Train", "Nomin", 240))
+    Program Output:
+        [1, 3, 5, 6]
 
-      print(p.count())
-      print(p.total_seconds())
-      print(p.songs[0].length())
-      print(p.longest_song().title)
-      print(p.songs_by("Nomin"))
+---
 
-    Output:
-      3
-      625
-      3:25
-      Night Train
-      ['Morning Steppe', 'Night Train']
+## Exercise 4
+
+**Problem:**
+
+`insertion_sort_trace(data)`
+
+Sort `data` using insertion sort, and return a trace of what `data` looked like
+after **every step** (`i = 1, 2, 3, ...` up to the end).
+
+- Add a copy after **every** step — even if nothing moved in that step.
+- A list with 0 or 1 items has no steps, so its trace is `[]`.
+
+**Example:**
+
+    Example Input:
+        data = [5, 6, 1, 3]
+
+    Program Output:
+        [[5, 6, 1, 3], [1, 5, 6, 3], [1, 3, 5, 6]]
+
+    Step i = 1: key = 6, nothing moves     -> [5, 6, 1, 3]
+    Step i = 2: key = 1, goes to the front -> [1, 5, 6, 3]
+    Step i = 3: key = 3, goes after 1      -> [1, 3, 5, 6]
+
+    Example Input:
+        data = [1, 2, 3]
+
+    Program Output:
+        [[1, 2, 3], [1, 2, 3]]
+
+Notice the difference from Exercise 2: bubble sort can **stop early**,
+but insertion sort always does every step.
+
+---
+
+## Exercise 5
+
+**Problem:**
+
+`rank_students(records)`
+
+`records` is a list of students. Each student is a list `[name, score]`.
+
+Sort the students by score, **highest first**, using **insertion sort**,
+and return the list.
+
+If two students have the **same score**, they must stay in the same order they
+were in originally.
+
+**Example:**
+
+    Example Input:
+        records = [["Bat", 78], ["Saraa", 91], ["Anu", 78], ["Dorj", 91], ["Tuya", 85]]
+
+    Program Output:
+        [["Saraa", 91], ["Dorj", 91], ["Tuya", 85], ["Bat", 78], ["Anu", 78]]
+
+Saraa was before Dorj, and Bat was before Anu — so they stay that way.
+
 
 ---
