@@ -3,26 +3,19 @@
 import pytest
 
 HINTS = [
-    ["takes no arguments",
-     "Your class has no __init__ method yet, or it is spelled wrong.\n"
-     "It must be:  def __init__(self, ...):   (two underscores on each side)"],
+    ["list index out of range",
+     "Your loop goes past the edge of the list.\n"
+     "  Bubble sort:    the inner loop compares data[j] with data[j + 1],\n"
+     "                  so j must stop one place before the end.\n"
+     "  Insertion sort: the while loop needs  j >= 0  so it stops at the\n"
+     "                  start of the list."],
 
-    ["positional argument but",
-     "One of your methods is missing 'self'.\n"
-     "Every method must start with self, for example:  def pay(self, fare):"],
-
-    ["'NoneType' object has no attribute",
-     "Something returned None (nothing) when an object was expected.\n"
-     "Check that your method has a 'return' statement."],
-
-    ["object has no attribute",
-     "An attribute or method is missing, or its name is spelled differently\n"
-     "from the README. Names must match EXACTLY, including capital letters.\n"
-     "Attributes must be created inside __init__ with  self.name = ..."],
+    ["'NoneType' object",
+     "Something is None (nothing). Your function probably forgot to 'return'\n"
+     "its answer, or you left 'pass' in it."],
 
     ["unsupported operand type(s)",
-     "You are doing maths with None. A method probably forgot to 'return'\n"
-     "its answer, or an attribute was never set in __init__."],
+     "You are doing maths with None. A function probably forgot to 'return'."],
 ]
 
 
@@ -40,13 +33,31 @@ def pytest_runtest_makereport(item, call):
 
 
 def pytest_assertrepr_compare(op, left, right):
-    if op == "==" and left is None:
+    if op != "==":
+        return None
+
+    if left is None:
         return [
-            "Your method returned None (nothing).",
+            "Your function returned None (nothing).",
             "",
             "This almost always means one of two things:",
-            "  1. You left 'pass' in the method instead of writing code.",
+            "  1. You left 'pass' in the function instead of writing code.",
             "  2. You wrote the code but forgot the 'return' statement.",
             "",
             "The test expected: " + repr(right),
         ]
+
+    if (isinstance(left, list) and len(left) > 1
+            and isinstance(left[0], list)
+            and all(row is left[0] for row in left)):
+        return [
+            "Every row of your trace is the SAME list.",
+            "",
+            "You appended the list itself, so when the list changed later,",
+            "every row you had already saved changed too.",
+            "Append a copy instead:   trace.append(data.copy())",
+            "",
+            "The test expected: " + repr(right),
+        ]
+
+    return None
