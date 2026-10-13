@@ -1,130 +1,127 @@
+import ast
+import inspect
+import textwrap
+
 import pytest
 
-from assignment import BusCard, Student, Song, Playlist
+from assignment import (
+    bubble_sort,
+    bubble_sort_trace,
+    insertion_sort,
+    insertion_sort_trace,
+    rank_students,
+)
 
 
-def test1_new_card():
-    card = BusCard("Bat")
-    assert card.owner == "Bat"
-    assert card.balance == 0
-    assert card.trips == 0
+def check_no_builtin_sort(function):
+    tree = ast.parse(textwrap.dedent(inspect.getsource(function)))
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Call):
+            if isinstance(node.func, ast.Name) and node.func.id == "sorted":
+                pytest.fail(function.__name__ + " uses sorted(). Write the sorting algorithm yourself.")
+            if isinstance(node.func, ast.Attribute) and node.func.attr == "sort":
+                pytest.fail(function.__name__ + " uses .sort(). Write the sorting algorithm yourself.")
 
 
-def test1_top_up_and_pay():
-    card = BusCard("Bat")
-
-    assert card.top_up(5000) == True
-    assert card.balance == 5000
-    assert card.top_up(0) == False
-    assert card.top_up(-200) == False
-    assert card.balance == 5000
-
-    assert card.pay(500) == True
-    assert card.balance == 4500
-    assert card.trips == 1
-
-    assert card.pay(10000) == False
-    assert card.balance == 4500
-    assert card.trips == 1
-
-    assert card.pay(4500) == True
-    assert card.balance == 0
-    assert card.trips == 2
-
-
-def test1_separate_cards():
-    card1 = BusCard("Bat")
-    card2 = BusCard("Saraa")
-    card1.top_up(3000)
-    card1.pay(500)
-    assert card1.balance == 2500
-    assert card1.trips == 1
-    assert card2.balance == 0
-    assert card2.trips == 0
-
-
-def test2_add_grade():
-    s = Student("Saraa")
-    assert s.name == "Saraa"
-    assert s.grades == []
-
-    assert s.add_grade(90) == True
-    assert s.add_grade(0) == True
-    assert s.add_grade(100) == True
-    assert s.add_grade(101) == False
-    assert s.add_grade(-1) == False
-    assert s.grades == [90, 0, 100]
-
-
-@pytest.mark.parametrize("grades, expected_average, expected_highest", [
-    [[90, 85, 77], 84.0, 90],
-    [[70, 81], 75.5, 81],
-    [[1, 2, 2], 1.7, 2],
-    [[100], 100.0, 100],
-    [[], 0, None],
+@pytest.mark.parametrize("data, expected", [
+    [[5, 6, 1, 3], [1, 3, 5, 6]],
+    [[64, 34, 25, 12, 22, 11, 90], [11, 12, 22, 25, 34, 64, 90]],
+    [[1, 2, 3, 4], [1, 2, 3, 4]],
+    [[4, 3, 2, 1], [1, 2, 3, 4]],
+    [[3, 1, 3, 1, 2], [1, 1, 2, 3, 3]],
+    [[-2, 5, -9, 0], [-9, -2, 0, 5]],
+    [[7], [7]],
+    [[], []],
 ])
-def test2_average_and_highest(grades, expected_average, expected_highest):
-    s = Student("Bat")
-    for grade in grades:
-        s.add_grade(grade)
-    assert s.average() == expected_average
-    assert s.highest() == expected_highest
+def test1_bubble_sort(data, expected):
+    check_no_builtin_sort(bubble_sort)
+    assert bubble_sort(data) == expected
 
 
-def test2_separate_students():
-    s1 = Student("Bat")
-    s2 = Student("Saraa")
-    s1.add_grade(95)
-    s1.add_grade(80)
-    assert s1.grades == [95, 80]
-    assert s2.grades == []
+def test1_in_place():
+    data = [9, 4, 7, 1]
+    result = bubble_sort(data)
+    assert data == [1, 4, 7, 9]
+    assert result is data
 
 
-@pytest.mark.parametrize("seconds, expected", [
-    [205, "3:25"],
-    [65, "1:05"],
-    [59, "0:59"],
-    [600, "10:00"],
-    [0, "0:00"],
+@pytest.mark.parametrize("data, expected", [
+    [[5, 6, 1, 3], [[5, 1, 3, 6], [1, 3, 5, 6]]],
+    [[4, 3, 2, 1], [[3, 2, 1, 4], [2, 1, 3, 4], [1, 2, 3, 4]]],
+    [[3, 2, 1], [[2, 1, 3], [1, 2, 3]]],
+    [[1, 3, 2, 4], [[1, 2, 3, 4]]],
+    [[3, 1, 3, 1], [[1, 3, 1, 3], [1, 1, 3, 3]]],
+    [[2, 1], [[1, 2]]],
+    [[1, 2, 3], []],
+    [[7], []],
+    [[], []],
 ])
-def test3_song(seconds, expected):
-    song = Song("Morning Steppe", "Nomin", seconds)
-    assert song.title == "Morning Steppe"
-    assert song.artist == "Nomin"
-    assert song.seconds == seconds
-    assert song.length() == expected
+def test2_bubble_trace(data, expected):
+    check_no_builtin_sort(bubble_sort_trace)
+    assert bubble_sort_trace(data) == expected
+    assert data == sorted(data)
 
 
-def test3_playlist_basics():
-    p = Playlist("Road Trip")
-    assert p.name == "Road Trip"
-    assert p.songs == []
-    assert p.count() == 0
-    assert p.total_seconds() == 0
-
-    s1 = Song("Morning Steppe", "Nomin", 205)
-    s2 = Song("Blue Sky", "Temuulen", 180)
-    p.add_song(s1)
-    p.add_song(s2)
-
-    assert p.count() == 2
-    assert p.total_seconds() == 385
-    assert p.songs[0] is s1
-    assert p.songs[1] is s2
+@pytest.mark.parametrize("data, expected", [
+    [[5, 6, 1, 3], [1, 3, 5, 6]],
+    [[64, 34, 25, 12, 22, 11, 90], [11, 12, 22, 25, 34, 64, 90]],
+    [[1, 2, 3, 4], [1, 2, 3, 4]],
+    [[4, 3, 2, 1], [1, 2, 3, 4]],
+    [[3, 1, 3, 1, 2], [1, 1, 2, 3, 3]],
+    [[-2, 5, -9, 0], [-9, -2, 0, 5]],
+    [[7], [7]],
+    [[], []],
+])
+def test3_insertion_sort(data, expected):
+    check_no_builtin_sort(insertion_sort)
+    assert insertion_sort(data) == expected
 
 
-def test3_playlist_search():
-    p = Playlist("Mix")
-    assert p.longest_song() is None
+def test3_in_place():
+    data = [9, 4, 7, 1]
+    result = insertion_sort(data)
+    assert data == [1, 4, 7, 9]
+    assert result is data
 
-    a = Song("Morning Steppe", "Nomin", 205)
-    b = Song("Blue Sky", "Temuulen", 180)
-    c = Song("Night Train", "Nomin", 240)
-    d = Song("Long Road", "Anu", 240)
-    for song in [a, b, c, d]:
-        p.add_song(song)
 
-    assert p.longest_song() is c
-    assert p.songs_by("Nomin") == ["Morning Steppe", "Night Train"]
-    assert p.songs_by("Anu") == ["Long Road"]
-    assert p.songs_by("Nobody") == []
+@pytest.mark.parametrize("data, expected", [
+    [[5, 6, 1, 3], [[5, 6, 1, 3], [1, 5, 6, 3], [1, 3, 5, 6]]],
+    [[5, 2, 4, 6, 1, 3], [
+        [2, 5, 4, 6, 1, 3],
+        [2, 4, 5, 6, 1, 3],
+        [2, 4, 5, 6, 1, 3],
+        [1, 2, 4, 5, 6, 3],
+        [1, 2, 3, 4, 5, 6],
+    ]],
+    [[3, 2, 1], [[2, 3, 1], [1, 2, 3]]],
+    [[1, 2, 3], [[1, 2, 3], [1, 2, 3]]],
+    [[2, 1], [[1, 2]]],
+    [[7], []],
+    [[], []],
+])
+def test4_insertion_trace(data, expected):
+    check_no_builtin_sort(insertion_sort_trace)
+    assert insertion_sort_trace(data) == expected
+    assert data == sorted(data)
+
+
+def test5_rank_students():
+    check_no_builtin_sort(rank_students)
+    records = [["Bat", 78], ["Saraa", 91], ["Tuya", 85], ["Anu", 60]]
+    result = rank_students(records)
+    assert result == [["Saraa", 91], ["Tuya", 85], ["Bat", 78], ["Anu", 60]]
+    assert result is records
+    assert rank_students([]) == []
+    assert rank_students([["Bat", 50]]) == [["Bat", 50]]
+
+
+def test5_ties_keep_order():
+    check_no_builtin_sort(rank_students)
+    records = [["Bat", 78], ["Saraa", 91], ["Anu", 78], ["Dorj", 91], ["Tuya", 85]]
+    assert rank_students(records) == [
+        ["Saraa", 91],
+        ["Dorj", 91],
+        ["Tuya", 85],
+        ["Bat", 78],
+        ["Anu", 78],
+    ]
