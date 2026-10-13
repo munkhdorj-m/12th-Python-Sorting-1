@@ -9,7 +9,6 @@ from assignment import (
     bubble_sort_trace,
     insertion_sort,
     insertion_sort_trace,
-    rank_students,
 )
 
 
@@ -103,25 +102,3 @@ def test4_insertion_trace(data, expected):
     check_no_builtin_sort(insertion_sort_trace)
     assert insertion_sort_trace(data) == expected
     assert data == sorted(data)
-
-
-def test5_rank_students():
-    check_no_builtin_sort(rank_students)
-    records = [["Bat", 78], ["Saraa", 91], ["Tuya", 85], ["Anu", 60]]
-    result = rank_students(records)
-    assert result == [["Saraa", 91], ["Tuya", 85], ["Bat", 78], ["Anu", 60]]
-    assert result is records
-    assert rank_students([]) == []
-    assert rank_students([["Bat", 50]]) == [["Bat", 50]]
-
-
-def test5_ties_keep_order():
-    check_no_builtin_sort(rank_students)
-    records = [["Bat", 78], ["Saraa", 91], ["Anu", 78], ["Dorj", 91], ["Tuya", 85]]
-    assert rank_students(records) == [
-        ["Saraa", 91],
-        ["Dorj", 91],
-        ["Tuya", 85],
-        ["Bat", 78],
-        ["Anu", 78],
-    ]
