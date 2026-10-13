@@ -1,18 +1,27 @@
-# You can remove 'pass' when you start writing the class.
-# Read README.md for exactly what each class must do.
+# You can remove 'pass' if you written code in the function
+# Do NOT use sorted() or .sort() - write the algorithms yourself.
 
 # Exercise 1
-class BusCard:
+def bubble_sort(data):
+    # Write your code here
     pass
 
 # Exercise 2
-class Student:
+def bubble_sort_trace(data):
+    # Write your code here
     pass
 
 # Exercise 3
-class Song:
+def insertion_sort(data):
+    # Write your code here
     pass
 
+# Exercise 4
+def insertion_sort_trace(data):
+    # Write your code here
+    pass
 
-class Playlist:
+# Exercise 5
+def rank_students(records):
+    # Write your code here
     pass
